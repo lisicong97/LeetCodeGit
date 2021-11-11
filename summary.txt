@@ -1,0 +1,324 @@
+28 俩list求median
+75 正则匹配* .
+one出现几次 a = n/m, b = n%m; ones+=(a+8)/10*m+(a%10==1)*(b+1)
+打气球 i in left+1 until right: ans = Math.max(ans, nums[left] * nums[i] * nums[right] 
+                                + burst(memo, nums, left, i) + burst(memo, nums, i, right))
+102 稀疏矩阵
+112 矩阵找第k小的数
+125 圈地
+134 图成树
+154 有向图成树
+170 邮件聚类
+202 无duplicate的char出现的次数
+214 工人雇佣
+汽车加油 dp是t次加油能走的距离         for (int i = 0; i < s（加油站）.length; ++i)
+                                    for (int t = i; t >= 0 && dp[t] >= s[i][0]; --t)
+                                        dp[t + 1] = Math.max(dp[t + 1], dp[t] + s[i][1]);
+拿石头 dp[i][j] = max(piles[i] - dp[i + 1][j], piles[j] - dp[i][j - 1]) 从[i,j]拿，能多拿几颗
+拿石头2 i in 1 .. 2*m; take = presum[p] - presum[p + i];
+            memo[p][m] = Math.max(res, take + presum[p + i] - dfs(presum, Math.max(i, m), p + i, memo));
+231 平方和arr数量
+252 matrix前缀和
+266 Palindrome k等分
+并行Courses 用bitmask和dp，dp[now] = dp[prev] ，其中prev和now的相差课程数小于k，now的前置都在prev
+切木棍 dp[i][j] = min(dp[i][k] + dp[k][j] + A[j] - A[i])
+最短编辑路径 dp[i][j] = min(dp[i-1][j's neighbor], + 0 or 1)
+281 car fleet/310 group2染色
+
+class Solution {
+    fun findMedianSortedArrays(nums1: IntArray, nums2: IntArray): Double {
+        var numsA: IntArray
+        var numsB: IntArray
+        if (nums1.size < nums2.size) {
+            numsA = nums1
+            numsB = nums2
+        } else {
+            numsA = nums2
+            numsB = nums1
+        }
+        val totalLength = numsA.size + numsB.size
+        val isOdd = (totalLength % 2 == 1)
+        if (numsA.isEmpty()) {
+            if (isOdd) return numsB[totalLength/2].toDouble()
+            else return (numsB[totalLength/2 - 1] + numsB[totalLength/2])/2.0
+        }
+        val leftLength = (totalLength + 1) / 2
+
+        var start = 0
+        var end = numsA.size - 1
+        var midA = 0
+        var midB = 0
+        while (start <= end) {
+            midA = (start + end) / 2
+            midB = leftLength - midA - 2
+            if (midB + 1 < numsB.size && numsA[midA] > numsB[midB + 1]) {
+                end = midA - 1
+            } else if (midA + 1 < numsA.size && numsA[midA + 1] < numsB[midB]) {
+                start = midA + 1
+            } else {
+                break
+            }
+        }
+        if (midA == 0) {
+            if (numsA.getOrNull(midA)?:Integer.MIN_VALUE > numsB.getOrNull(midB + 1)?:Integer.MAX_VALUE) {
+                midA = -1
+                midB = leftLength - midA - 2
+            }
+        }
+
+        if (isOdd) return Math.max(numsA.getOrNull(midA)?: Int.MIN_VALUE, numsB.getOrNull(midB)?: Int.MIN_VALUE).toDouble()
+        else return (Math.max(numsA.getOrNull(midA)?: Int.MIN_VALUE, numsB.getOrNull(midB)?: Int.MIN_VALUE) +
+                Math.min(numsA.getOrNull(midA + 1)?:Int.MAX_VALUE, numsB.getOrNull(midB + 1)?:Int.MAX_VALUE)) / 2.0
+    }
+}
+
+class Solution {
+    fun isMatch(s: String, p: String): Boolean {
+        val dp = Array(s.length + 1){ BooleanArray(p.length + 1)}
+        dp[0][0] = true
+        for (i in p.indices) {
+            if (p[i] == '*' && dp[0][i-1]) {
+                dp[0][i+1] = true
+            }
+        }
+        for (i in s.indices) {
+            for (j in p.indices) {
+                if (p[j] == '.' || p[j] == s[i]) {
+                    dp[i+1][j+1] = dp[i][j]
+                }
+                if (p[j] == '*') {
+                    if (p[j-1] != s[i] && p[j-1] != '.') {
+                        dp[i+1][j+1] = dp[i+1][j-1]
+                    } else {
+                        dp[i+1][j+1] = (dp[i+1][j] || dp[i][j+1] || dp[i+1][j-1])
+                    }
+                }
+            }
+        }
+        return dp[s.length][p.length]
+    }
+}
+
+for (int i = 0; i < A.size(); ++i) {
+    for (int k = 0; k < A[0].size(); ++k) {
+        if (A[i][k] != 0) {
+            for (int j = 0; j < B[0].size(); ++j) {
+                if (B[k][j] != 0) res[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+}
+
+int lo = matrix[0][0], hi = matrix[matrix.length - 1][matrix[0].length - 1] + 1;//[lo, hi)
+    while(lo < hi) {
+        int mid = lo + (hi - lo) / 2;
+        int count = 0,  j = matrix[0].length - 1;
+        for(int i = 0; i < matrix.length; i++) {
+            while(j >= 0 && matrix[i][j] > mid) j--;
+            count += (j + 1);
+        }
+        if(count < k) lo = mid + 1;
+        else hi = mid;
+    }
+    return lo;
+
+(y3-y2)*(x2-x1) - (y2-y1)*(x3-x2)
+for point in points:
+    while len(lower) >= 2 and cmp(lower[-2], lower[-1], point) > 0:
+        ower.pop()
+    while len(upper) >= 2 and cmp(upper[-2], upper[-1], point) < 0:
+        upper.pop()
+    lower.append(tuple(point))
+    upper.append(tuple(point))
+
+        def find(x):
+            if parent[x] == x:
+                return x
+            parent[x] = find(parent[x])
+            return parent[x]
+            
+        def union(x, y):
+            root_x = find(x)
+            root_y = find(y)
+            if root_x == root_y:
+                return False #已经连在一起了
+            elif rank[root_x] < rank[root_y]:
+                parent[root_x] = root_y
+                rank[root_y] += 1
+                return True
+            else:
+                parent[root_y] = root_x
+                rank[root_x] += 1
+                return True
+
+找到有俩parent的node，把第二个edge无效化
+        for (int i = 0; i < edges.length; i++) {
+            if (是第二个) {
+                continue;
+            }
+            int child = edges[i][1], father = edges[i][0];
+            if (find(parent, father) == child) {
+                if (can1[0] == -1) { //没有有俩parent的node
+                    return edges[i];
+                }
+                return can1;
+            }
+            parent[child] = father;
+        }
+        return can2;
+
+        Map<String, String> owner = new HashMap<>();
+        Map<String, String> parents = new HashMap<>();
+        Map<String, TreeSet<String>> unions = new HashMap<>();
+        for (List<String> a : acts) { //初始化，每个p都是自己
+            for (int i = 1; i < a.size(); i++) {
+                parents.put(a.get(i), a.get(i));
+                owner.put(a.get(i), a.get(0));
+            }
+        }
+        for (List<String> a : acts) { //每个email的p和第一个email的p一样
+            String p = find(a.get(1), parents);
+            for (int i = 2; i < a.size(); i++)
+                parents.put(find(a.get(i), parents), p);
+        }
+        for(List<String> a : acts) { //根据每个email的p联合
+            String p = find(a.get(1), parents);
+            if (!unions.containsKey(p)) unions.put(p, new TreeSet<>());
+            for (int i = 1; i < a.size(); i++)
+                unions.get(p).add(a.get(i));
+        }
+        List<List<String>> res = new ArrayList<>();
+        for (String p : unions.keySet()) {
+            List<String> emails = new ArrayList(unions.get(p));
+            emails.add(0, owner.get(p));
+            res.add(emails);
+        }
+        return res;
+
+    private String find(String s, Map<String, String> p) {
+        return p.get(s) == s ? s : find(p.get(s), p);
+    }
+
+        int[][] index = new int[26][2];
+        for (int i = 0; i < 26; ++i) Arrays.fill(index[i], -1);
+        int res = 0, N = S.length(), mod = (int)Math.pow(10, 9) + 7;
+        for (int i = 0; i < N; ++i) {
+            int c = S.charAt(i) - 'A';
+            res = (res + (i - index[c][1]) * (index[c][1] - index[c][0]) % mod) % mod;
+            index[c] = new int[] {index[c][1], i};
+        }
+        for (int c = 0; c < 26; ++c)
+            res = (res + (N - index[c][1]) * (index[c][1] - index[c][0]) % mod) % mod;
+        return res;
+
+    //另一个问题，用效率逆序排
+    public double mincostToHireWorkers(int[] q, int[] w, int K) {
+        double[][] workers = new double[q.length][2];
+        for (int i = 0; i < q.length; ++i)
+            workers[i] = new double[]{(double)(w[i]) / q[i], (double)q[i]};
+        Arrays.sort(workers, (a, b) -> Double.compare(a[0], b[0]));//按性价比排序
+        double res = Double.MAX_VALUE, qsum = 0;
+        PriorityQueue<Double> pq = new PriorityQueue<>();
+        for (double[] worker: workers) {
+            qsum += worker[1];
+            pq.add(-worker[1]);
+            if (pq.size() > K) qsum += pq.poll(); //quality最高的不要
+            if (pq.size() == K) res = Math.min(res, qsum * worker[0]);
+        }
+        return res;
+    }
+
+    int numSquarefulPerms(vector<int>& A) {
+        for (int &a : A) count[a]++;
+        for (auto &i : count) {
+            for (auto &j : count) {
+                int x = i.first, y = j.first, s = sqrt(x + y);
+                if (s * s == x + y)
+                    cand[x].insert(y);
+            }
+        }
+        for (auto e : count)
+            dfs(e.first, A.size() - 1);
+        return res;
+    }
+    void dfs(int x, int left) {
+        count[x]--;
+        if (!left) res++;
+        for (int y : cand[x])
+            if (count[y] > 0)
+                dfs(y, left - 1);
+        count[x]++;
+    }
+        算单行前缀和
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                counter.clear();
+                counter.put(0, 1);
+                int cur = 0;
+                for (int k = 0; k < m; k++) {
+                    cur += A[k][j] - (i > 0 ? A[k][i - 1] : 0);
+                    res += counter.getOrDefault(cur - target, 0);
+                    counter.put(cur, counter.getOrDefault(cur, 0) + 1);
+                }
+            }
+        }
+
+        算string的toPal,toPal[i][j]代表从substring(i,j)要换几次
+        for (int i = 0; i < s.length(); i++) {
+            dp[1][i] = toPal[0][i];
+        }
+        for (int i = 2; i <= k; i++) {
+            for (int end = i-1; end < s.length(); end++) {
+                int min = Integer.MAX_VALUE:
+                for (int start = end-1; start >= i-2; start--) {
+                    min = Math.min(min, dp[i-1][start] + toPal[start+1][end]);
+                }
+                dp[i][end] = min;
+            }
+        }
+        return dp[k][s.length()-1];
+
+        m = treeMap(reverseOrder)
+        for (int i = 0; i < pos.length; ++i)
+            m.put(pos[i], (double)(target - pos[i]) / speed[i]);
+        int res = 0; double cur = 0;
+        for (double time : m.values()) {
+            if (time > cur) {
+                cur = time;
+                res++;
+            }
+        }
+        // 第二题
+        for (int i = n - 1; i >= 0; --i) {
+            res[i] = -1.0;
+            int p = A[i][0], s = A[i][1];//目前的车位置，车速
+            while (stack.size() > 0) {
+                int j = stack.peekLast(), p2 = A[j][0], s2 = A[j][1];
+                //如果cur比s2慢，或者相遇时间太长，s2滚粗
+                if (s <= s2 || 1.0 * (p2 - p) / (s - s2) >= res[j] && res[j] > 0)
+                    stack.pollLast();
+                else
+                    break;
+            }
+            if (stack.size() > 0) {
+                int j = stack.peekLast(), p2 = A[j][0], s2 = A[j][1];
+                res[i] = 1.0 * (p2 - p) / (s - s2);
+            }
+            stack.add(i);
+        }
+        return res;
+
+    private boolean dfs(int[][] graph, int[] group, int index, int g) {
+        group[index] = g;
+        for (int i = 0; i < graph.length; i++) {
+            if (graph[index][i] == 1) {
+                if (group[i] == g) {
+                    return false;
+                }
+                if (group[i] == 0 && !dfs(graph, group, i, -g)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
