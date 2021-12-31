@@ -10,13 +10,17 @@ dfs/bfs BFS可以考虑PriorityQueue
 
 发现没什么可以套，找找规律，看看有什么数学方法
 
+preSum用hashMap存时，key为preSum，value为出现次数，注意map初始化后，map[0] = 1
+
+最小修改使得s1 == s2的dp题目记得初始化dp[ 0 ] [ i ] 和 dp[ i ] [ 0 ]
+
 时间复杂度
 T(n) = a*T(n/b)+ n^k
     if (a > b^k)   T(n) = O(n^(logb(a)));
     if (a = b^k)   T(n) = O(n^k * logn);
     if (a < b^k)   T(n) = O(n^k); 
 
-Dfs bfs: map: O(N+E) matrix:O(N^2)
+Dfs bfs time complexity: map: O(N+E) matrix:O(N^2)
 
 # sort
 
@@ -369,6 +373,30 @@ public class Solution {
         }
         return lo;
     }
+}
+```
+
+300 Longest Increasing Subsequence https://leetcode.com/problems/longest-increasing-subsequence/discuss/74824/JavaPython-Binary-search-O(nlogn)-time-with-explanation
+
+```Java
+public int lengthOfLIS(int[] nums) {
+    int[] tails = new int[nums.length];
+    int size = 0;
+    // (1) if x is larger than all tails, append it, increase the size by 1
+    // (2) if tails[i-1] < x <= tails[i], update tails[i]
+    for (int x : nums) {
+        int i = 0, j = size;
+        while (i != j) {
+            int m = (i + j) / 2;
+            if (tails[m] < x)
+                i = m + 1;
+            else
+                j = m;
+        }
+        tails[i] = x;
+        if (i == size) ++size;
+    }
+    return size;
 }
 ```
 
@@ -858,3 +886,75 @@ z = x y 的最大公约数
                 return True
 ```
 
+Minimum spanning tree
+
+```Java
+// 1584 哈密顿距离
+// Kruskal 把所有边放进优先队列，如果两个图没联通，算上这条边
+class Solution {
+    public int minCostConnectPoints(int[][] points) {
+        int n=points.length;
+        PriorityQueue<int[]> pq=new PriorityQueue<>((a,b)->a[0]-b[0]);
+        for(int i=0;i<n-1;++i)
+            for(int j=i+1;j<n;++j){
+                int dist=Math.abs(points[i][0]-points[j][0])+Math.abs(points[i][1]-points[j][1]);
+                pq.offer(new int[]{dist,i,j});
+            }
+        int res=0;
+        Union un=new Union(n);
+        while(!un.United()&&!pq.isEmpty()){
+            int[] edge=pq.poll();
+            int p1=edge[1];
+            int p2=edge[2];
+            if(un.Unite(p1,p2))
+                res+=edge[0];
+        }
+        return res;
+    }
+    private class Union{
+        int components;
+        int[] component;
+        Union(){};
+        Union(int n){
+            components=n;
+            component=new int[n+1];
+            for(int i=0;i<=n;++i)
+                component[i]=i;
+        }
+        int Find(int a){
+            if(component[a]!=a)
+                component[a]=Find(component[a]);
+            return component[a];
+        }
+        boolean Unite(int a,int b){
+            if(Find(a)==Find(b))
+                return false;
+            --components;
+            component[Find(a)]=b;
+            return true;
+        }
+        boolean United(){return components==1;}
+    }
+}
+
+//Prim's 任选一点开始标记为visited，找他未visit的点的最小边，连接上，然后找他俩的最小边...
+class Solution {
+    public int minCostConnectPoints(int[][] points) {
+        PriorityQueue<int[]> pq=new PriorityQueue<>((a,b)->a[0]-b[0]);  //min heap
+        int res=0,connected=0,i=0,n=points.length;
+        boolean[] visited=new boolean[n];
+        while(++connected<n){
+            visited[i]=true;
+            for(int j=1;j<n;++j)
+                if(!visited[j])
+                    pq.offer(new int[]{Math.abs(points[i][0]-points[j][0])+Math.abs(points[i][1]-points[j][1]),j});
+            while(visited[pq.peek()[1]])
+                pq.poll();
+            int[] curr=pq.poll();
+            res+=curr[0];
+            i=curr[1];
+        }
+        return res;
+    }
+}
+```
