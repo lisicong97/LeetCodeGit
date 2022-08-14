@@ -1,0 +1,681 @@
+时间复杂度
+T(n) = a*T(n/b)+ n^k
+    if (a > b^k)   T(n) = O(n^(logb(a)));
+    if (a = b^k)   T(n) = O(n^k * logn);
+    if (a < b^k)   T(n) = O(n^k); 
+
+java方法&tips
+
+巧妙的递归 114 332
+
+辗转相除法
+public int GCD(int a, int b){
+    while(b != 0 ){
+        int temp = b;
+        b = a%b;
+        a = temp;
+    }
+    return a;
+}
+
+procedure three-way-partition: 荷兰旗三分法
+    i ← 0 j ← 0 k ← size of A
+    while j < k:
+        if A[j] < mid:
+            swap A[i++] and A[j++]
+        else if A[j] > mid:
+            k ← k - 1
+            swap A[j] and A[k]
+        else:
+            j ← j + 1
+
+空间复杂度要求常数时可以用输入的array储存内容
+
+()匹配 出入栈 可以用递归带参(open, close),数量的计算方法是C(n,2n) - C(n-1,2n)，卡特兰数
+
+两个指针：一个从头一个从尾/一个进N节一个进一节/一个先走一个后走
+逼近：二分法、乘二法
+
+int 4 bytes乘法溢出检测，乘之前：if (res > Integer.MAX_VALUE/10 || (res == Integer.MAX_VALUE/10 && x%mod>7)) return 0; else res *= 10;
+
+str.toCharArray();
+String.valueOf(char_array);
+
+toArray()
+    error: String[] array2 = list.toArray();//只是元素的引用，不是存储的具体元素
+    correct: String[] array2 = list.toArray(new String[testList.size()]);
+
+asList()
+        String[] x = {"1","2","3"};
+        ArrayList<String> arrayList = new ArrayList<String>(Arrays.asList(x));
+
+sort()
+    class mysort implements Comparator<Student> {
+        public int compare(Student a, Student b) { 
+            //从小到大
+            return a.score - b.score; 
+        } 
+    }
+    Collections.sort(allStudents, new mysort());
+    
+    Arrays.sort(T[], new Comparator<T>() {
+        public int compare(T a, T b){
+            return fa - fb;
+        }
+    });
+    Arrays.sort(intervals, (i1, i2) -> Integer.compare(i1[0], i2[0]));
+
+滑动窗口
+    找序列中符合条件的子序列用滑动窗口，比如最长不重复substring
+    76 Given a string S and a string T, find the minimum window in S which will contain all the characters in T
+    public String minWindow(String s, String t) {
+        if(s.length() == 0 || s.length() < t.length()) return "";
+        int left = 0, right = 0;
+        int count = 0, minLen = Integer.MAX_VALUE, minLeft = 0;
+        HashMap<Character, Integer> map = new HashMap<>();
+        for(char c : t.toCharArray()) {
+            map.put(c, map.getOrDefault(c,0)+1);
+        }
+        //两个指针，第一个用for从头扫到尾
+        for(right = 0; right < s.length(); right++) {
+            char tem = s.charAt(right);
+            if(map.containsKey(tem)) {
+                map.put(tem, map.get(tem)-1);
+                if(map.get(tem) >= 0) count++;
+                //第二个在right合适的前提下用while从current向右扫
+                while(count == t.length()) {
+                    if(right-left+1 < minLen){
+                        minLeft = left;
+                        minLen = right-left+1;
+                    }
+                    if(map.containsKey(s.charAt(left))){
+                        map.put(s.charAt(left),map.get(s.charAt(left))+1);
+                        if(map.get(s.charAt(left)) > 0){
+                            count--;
+                        }
+                    }
+                    left++;
+                }
+            }
+        }
+        return minLen == Integer.MAX_VALUE?"":s.substring(minLeft,minLeft+minLen);
+    }
+
+中位数
+    4 两个已排序的arrays X Y，分成A B两堆，len(A)=len(B)，max(A)<=min(B)。只需要找X的前几个分到A堆，就可以确定Y分到B堆的数量（(len(A)+len(B))/2-?）对整个X二分查找
+    imin, imax, half_len = 0, m, (m + n + 1) / 2
+    while imin <= imax:
+        i = (imin + imax) / 2 //A的分割点
+        j = half_len - i      //B的分割点
+        if i < m and B[j-1] > A[i]:
+            # i is too small, must increase it
+            imin = i + 1
+        elif i > 0 and A[i-1] > B[j]:
+            # i is too big, must decrease it
+            imax = i - 1
+        else:
+            # i is perfect
+    295 乱序array 维护两个len相等的优先队列
+    private Queue<Long> small = new PriorityQueue(),
+                        large = new PriorityQueue();
+
+    public void addNum(int num) {
+        large.add((long) num);
+        small.add(-large.poll()); //small是相反数，加入它的是large中最大的，变负数后大的反而沉底
+        if (large.size() < small.size())//确保平衡且large大
+            large.add(-small.poll());
+    }
+
+    public double findMedian() {
+        return large.size() > small.size()
+               ? large.peek()
+               : (large.peek() - small.peek()) / 2.0;
+    }
+
+string dp
+    10 正则
+    //解决s长度为0时a*b*c*也能匹配
+    for (int i = 0; i < p.length(); i++) {
+        if (p.charAt(i) == '*' && dp[0][i-1]) {
+            dp[0][i+1] = true;
+        }
+    }
+    for (int i = 0 ; i < s.length(); i++) {
+        for (int j = 0; j < p.length(); j++) {
+            if (p.charAt(j) == '.') {
+                dp[i+1][j+1] = dp[i][j];
+            }
+            if (p.charAt(j) == s.charAt(i)) {
+                dp[i+1][j+1] = dp[i][j];
+            }
+            if (p.charAt(j) == '*') {
+                if (p.charAt(j-1) != s.charAt(i) && p.charAt(j-1) != '.') {
+                    dp[i+1][j+1] = dp[i+1][j-1];
+                } else {
+                    dp[i+1][j+1] = (dp[i+1][j] || dp[i][j+1] || dp[i+1][j-1]);//single、multiple、empty
+                }
+            }
+        }
+    }
+    return dp[s.length()][p.length()];
+    44 正则 ？ *（代表任意长度字符）
+    for(int i=0; i<m; i++) {
+        for(int j=0; j<n; j++) {
+            if (p.charAt(j)!='*') {
+                dp[i+1][j+1] = dp[i][j] && 
+                (s.charAt(i)==p.charAt(j) || p.charAt(j)=='?');
+            } else {
+                dp[i+1][j+1] = dp[i][j+1] || dp[i+1][j];
+            }
+        }
+    }
+    72 最短编辑距离
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(word1.charAt(i) == word2.charAt(j))
+                    cost[i + 1][j + 1] = cost[i][j];
+                else {
+                    int a = cost[i][j];
+                    int b = cost[i][j + 1];
+                    int c = cost[i + 1][j];
+                    cost[i + 1][j + 1] = min(a,b,c)+1;
+                }
+            }
+        }
+
+二分查找
+    69sqrt找n的开方数也能用 在0～n之间binary
+    33找pivot//mid应该与end比，不然[1，2，3][3，1]
+    while (start < end) {
+        int mid = start + (end -  start) / 2;
+        if (nums[mid] > nums[end]) start = mid + 1;
+        else end = mid;
+    }
+    return start;
+    34duplicates找最左边的
+    while(lo<=hi) {
+        int mid = (lo+hi)/2;
+        if(nums[mid]>=target) hi=mid-1;
+        else lo=mid+1;
+        if(nums[mid] == target) 
+            res = mid;
+    }
+
+
+
+56 时间间隔合并
+class Solution {
+    public int[][] merge(int[][] intervals) {
+        if (intervals.length <= 1)
+            return intervals;
+
+        // Sort by ascending starting point
+        Arrays.sort(intervals, (i1, i2) -> Integer.compare(i1[0], i2[0]));
+
+        List<int[]> result = new ArrayList<>();
+        int[] newInterval = intervals[0];
+        result.add(newInterval);
+        for (int[] interval : intervals) {
+            if (interval[0] <= newInterval[1]) // Overlapping intervals, move the end if needed
+                newInterval[1] = Math.max(newInterval[1], interval[1]);
+            else {                             // Disjoint intervals, add the new interval to the list
+                newInterval = interval;
+                result.add(newInterval);
+            }
+        }
+
+        return result.toArray(new int[0][0]);
+    }
+}
+或者分别排序begin、end，遍历end，找到next_start>end
+public List<Interval> merge(List<Interval> intervals) {
+    // sort start&end
+    int n = intervals.size();
+    int[] starts = new int[n];
+    int[] ends = new int[n];
+    for (int i = 0; i < n; i++) {
+        starts[i] = intervals.get(i).start;
+        ends[i] = intervals.get(i).end;
+    }
+    Arrays.sort(starts);
+    Arrays.sort(ends);
+    // loop through
+    List<Interval> res = new ArrayList<Interval>();
+    for (int i = 0, j = 0; i < n; i++) { // j is start of interval.
+        if (i == n - 1 || starts[i + 1] > ends[i]) {
+            res.add(new Interval(starts[j], ends[i]));
+            j = i + 1;
+        }
+    }
+    return res;
+}
+
+链表转置
+    ListNode reverse(ListNode head) {
+        ListNode left = null, right;
+        while(head.next != null) {
+            right = head.next;
+            head.next = left;
+            left = head;
+            head = right;
+        }
+        head.next = left;
+        return head;
+    }
+
+iterative 中序遍历
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> list = new ArrayList<Integer>();
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        TreeNode cur = root;
+
+        while(cur!=null || !stack.empty()){
+            while(cur!=null){
+                stack.add(cur);
+                cur = cur.left;
+            }
+            cur = stack.pop();
+            list.add(cur.val);
+            cur = cur.right;
+        }
+        
+        return list;
+    }
+iterative 前序遍历
+	public List<Integer> preorderTraversal(TreeNode node) {
+		List<Integer> list = new LinkedList<Integer>();
+		Stack<TreeNode> rights = new Stack<TreeNode>();
+		while(node != null) {
+			list.add(node.val);
+			if (node.right != null) {
+				rights.push(node.right);
+			}
+			node = node.left;
+			if (node == null && !rights.isEmpty()) {
+				node = rights.pop();
+			}
+		}
+	    return list;
+	}
+def preorderTraversal(self, root):
+    ret = []
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if node:
+            ret.append(node.val)
+            stack.append(node.right)
+            stack.append(node.left)
+    return ret
+    
+iterative 后序遍历
+	public List<Integer> postorderTraversal(TreeNode root) {
+		LinkedList<Integer> ans = new LinkedList<>();
+		Stack<TreeNode> stack = new Stack<>();
+		if (root == null) return ans;
+		
+		stack.push(root);
+		while (!stack.isEmpty()) {
+			TreeNode cur = stack.pop();
+			ans.addFirst(cur.val);
+			if (cur.left != null) {
+				stack.push(cur.left);
+			}
+			if (cur.right != null) {
+				stack.push(cur.right);
+			} 
+		}
+		return ans;
+	}
+	
+建树 preorder+inorder
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
+        Map<Integer, Integer> inMap = new HashMap<Integer, Integer>();
+        for(int i = 0; i < inorder.length; i++) inMap.put(inorder[i], i);
+        TreeNode root = buildTree(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1, inMap);
+        return root;
+    }
+
+    public TreeNode buildTree(int[] preorder, int preStart, int preEnd, int[] inorder, int inStart, int inEnd, Map<Integer, Integer> inMap) {
+        if(preStart > preEnd || inStart > inEnd) return null;
+        TreeNode root = new TreeNode(preorder[preStart]);
+        int inRoot = inMap.get(root.val);
+        int numsLeft = inRoot - inStart;
+        root.left = buildTree(preorder, preStart + 1, preStart + numsLeft, inorder, inStart, inRoot - 1, inMap);
+        root.right = buildTree(preorder, preStart + numsLeft + 1, preEnd, inorder, inRoot + 1, inEnd, inMap);
+        return root;
+    }
+
+建树 postorder+inorder
+    public TreeNode buildTree(int[] inorder, int[] postorder) {
+    	Map<Integer, Integer> inMap = new HashMap<Integer, Integer>();
+    	for(int i = 0; i < inorder.length; i++) inMap.put(inorder[i], i);
+    	TreeNode root = buildTree(postorder, 0, postorder.length - 1, inorder, 0, inorder.length - 1, inMap);
+        return root;
+        }
+    public TreeNode buildTree(int[] postorder, int postStart, int postEnd, int[] inorder, int inStart, int inEnd, Map<Integer, Integer> inMap) {
+        if(postStart > postEnd || inStart > inEnd) return null;
+        TreeNode root = new TreeNode(postorder[postEnd]);
+        int inRoot = inMap.get(root.val);
+        int numsLeft = inRoot - inStart;
+        root.left = buildTree(postorder, postStart, postStart + numsLeft-1, inorder, inStart, inRoot - 1, inMap);
+        root.right = buildTree(postorder, postStart + numsLeft, postEnd-1, inorder, inRoot + 1, inEnd, inMap);
+        return root;
+    }
+
+找只出现一次的数字
+public int singleNumber(int[] A) {
+    int ones = 0, twos = 0;
+    for(int i = 0; i < A.length; i++){
+        ones = (ones ^ A[i]) & ~twos;
+        twos = (twos ^ A[i]) & ~ones;
+    }
+    return ones;
+}
+What we need to do is to store the number of '1's of every bit. Since each of the 32 bits follow the same rules, we just need to consider 1 bit. We know a number appears 3 times at most, so we need 2 bits to store that. Now we have 4 state, 00, 01, 10 and 11, but we only need 3 of them.
+
+In this solution, 00, 01 and 10 are chosen. Let 'ones' represents the first bit, 'twos' represents the second bit. Then we need to set rules for 'ones' and 'twos' so that they act as we hopes. The complete loop is 00->10->01->00(0->1->2->3/0).
+
+For 'ones', we can get 'ones = ones ^ A[i]; if (twos == 1) then ones = 0', that can be tansformed to 'ones = (ones ^ A[i]) & ~twos'.
+
+Similarly, for 'twos', we can get 'twos = twos ^ A[i]; if (ones* == 1) then twos = 0' and 'twos = (twos ^ A[i]) & ~ones'. Notice that 'ones*' is the value of 'ones' after calculation, that is why twos is
+calculated later.
+
+Here is another example. If a number appears 5 times at most, we can write a program using the same method. Now we need 3 bits and the loop is 000->100->010->110->001. The code looks like this:
+
+int singleNumber(int A[], int n) {
+	int na = 0, nb = 0, nc = 0;
+	for(int i = 0; i < n; i++){
+		nb = nb ^ (A[i] & na);
+		na = (na ^ A[i]) & ~nc;
+		nc = nc ^ (A[i] & ~na & ~nb);
+	}
+	return na & ~nb & ~nc;
+}
+
+买股票 188
+    public int maxProfit(int k, int[] prices) {
+        int len = prices.length;
+        
+        int[][] t = new int[k + 1][len];
+        for (int i = 1; i <= k; i++) {
+            int tmpMax =  -prices[0];
+            for (int j = 1; j < len; j++) {
+                t[i][j] = Math.max(t[i][j - 1], prices[j] + tmpMax);
+                tmpMax =  Math.max(tmpMax, t[i - 1][j - 1] - prices[j]);
+            }
+        }
+        return t[k][len - 1];
+    }
+
+224 加减法括号计算
+public int calculate(String s) {
+    Stack<Integer> stack = new Stack<Integer>();
+    int result = 0;
+    int number = 0;
+    int sign = 1;
+    for(int i = 0; i < s.length(); i++){
+        char c = s.charAt(i);
+        if(Character.isDigit(c)){
+            number = 10 * number + (int)(c - '0');
+        }else if(c == '+'){
+            result += sign * number;
+            number = 0;
+            sign = 1;
+        }else if(c == '-'){
+            result += sign * number;
+            number = 0;
+            sign = -1;
+        }else if(c == '('){
+            //we push the result first, then sign;
+            stack.push(result);
+            stack.push(sign);
+            //reset the sign and result for the value in the parenthesis
+            sign = 1;   
+            result = 0;
+        }else if(c == ')'){
+            result += sign * number;  
+            number = 0;
+            result *= stack.pop();    //stack.pop() is the sign before the parenthesis
+            result += stack.pop();   //stack.pop() now is the result calculated before the parenthesis
+            
+        }
+    }
+    result += sign * number;
+    return result;
+}
+加减乘除无括号
+    public int calculate(String s) {
+        if (s == null || s.length() == 0) return 0;
+        Stack<Integer> stack = new Stack<>();
+        s += '+';
+        char op = '+';
+        for (int i = 0, n = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c >= '0' && c <= '9') { n = n * 10 + c - '0'; continue; }
+            if (c == ' ') continue;
+            if (op == '+') stack.push(n);
+            else if (op == '-') stack.push(-n);
+            else if (op == '*') stack.push(stack.pop()*n);
+            else if (op == '/') stack.push(stack.pop()/n);
+            op = c;
+            n = 0;
+        }
+
+        int total = 0;
+        while (!stack.isEmpty()) total += stack.pop();
+        return total;
+    }
+
+229 找超过二分之一的数
+    candidate = 0
+    count = 0
+    for value in input:
+      if count == 0:
+        candidate = value
+      if candidate == value:
+        count += 1
+      else:
+        count -= 1
+    验证candidate
+
+    找超过三分之一的数
+def majorityElement(self, nums):
+    count1, count2, candidate1, candidate2 = 0, 0, 0, 1
+    for n in nums:
+        if n == candidate1:
+            count1 += 1
+        elif n == candidate2:
+            count2 += 1
+        elif count1 == 0:
+            candidate1, count1 = n, 1
+        elif count2 == 0:
+            candidate2, count2 = n, 1
+        else:
+            count1, count2 = count1 - 1, count2 - 1
+    return [n for n in (candidate1, candidate2)
+                    if nums.count(n) > len(nums) // 3]
+
+1～n各数出现多少个1
+public int countDigitOne(int n) {
+    int ones = 0;
+    for (long m = 1; m <= n; m *= 10)
+        ones += (n/m + 8) / 10 * m + (n/m % 10 == 1 ? n%m + 1 : 0);
+    return ones;
+}
+https://leetcode.com/problems/number-of-digit-one/discuss/64381/4%2B-lines-O(log-n)-C%2B%2BJavaPython 单独判断一个位，这个位大于1、小于1还是等于1
+
+找树上俩节点的最低公祖先
+public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    if (root == null || root == p || root == q) return root;
+    TreeNode left = lowestCommonAncestor(root.left, p, q);
+    TreeNode right = lowestCommonAncestor(root.right, p, q);
+    if(left == null && right == null) return null; 
+    if(left != null && right != null) return root;  
+    return left == null ? right : left;
+}
+
+插入排序
+public void insertSort(int[] a){
+    int len=a.length;
+    for(int i=1;i<len;i++){
+        int insertVal=a[i];    //待插入元素
+        int index=i-1;         //插入的位置（准备和前一个作比较）
+        while(index>=0 && insertVal<a[index]){
+            a[index+1]=a[index];
+            index--;
+        }
+        a[index+1]=insertVal;      //把插入的数放到合适的位置
+    }
+}
+希尔排序
+public void shellSort(int[] a){
+    int dk=a.length/2;
+    while(dk>=1){
+        ShellInsertSort(a,dk)
+        dk=dk/2;
+    }
+}
+public void ShellInsertSort(int[] a,int dk){
+    //类似插入排序，只是插入排序增量是1，这里增量是dk
+    for(int i=dk;i<a.length;i++){
+        if(a[i]<a[i-dk]){
+            int j;
+            int x=a[i];   //x为待插入元素   
+            a[i]=a[i-dk];
+            for(j=i-dk;j>=0&&x<a[j];j=j-dk){  
+            //通过循环，逐个后移一位找到要插入的位置。
+                a[j+dk]=a[j];
+            }
+            a[j+dk]=x;   //插入
+        }
+    }
+}
+冒泡排序
+public void bubbleSort(int[] a, int n ){
+    int i,j;
+    for(i=0; i<n; i++){
+        for(j=1; j<n-i; j++){
+            if(a[j-1]>a[j]){
+                int temp;
+                temp=a[j-1];
+                a[j-1]=a[j];
+                a[j]=temp;
+            }   
+        }
+    }   
+}
+快速排序
+public void QuickSort(int[] a, int low, int high){
+    int temp;
+    int i=low, j=high;
+    if(low<high){
+        temp=a[low];
+        while(i!=j){
+            while(i<j && a[j]>temp) j--;
+            if(i<j){
+                a[i]=a[j];
+                i++;
+            }
+            while(i<j && a[i]<temp) i++;
+            if(i<j){
+                a[j]=a[i];
+                j--;
+            }           
+        }
+        a[i]=temp;
+        QuickSort(a, low, i-1);
+        QuickSort(a, i+1, high);
+    }   
+}
+堆排序
+//因R[]中是一颗完全二叉树，所以元素的存储必须从1开始，
+    public static void Shift(int[] R,int low, int high){
+        int i=low, j=2*i; //R[j]是R[i]的左孩子结点
+        int temp=R[i];
+        while(j<=high){
+            if(j<high && R[j]<R[j+1])
+                j++;
+            if(temp<R[j]){   //如果当前值小于孩子结点，
+                R[i]=R[j];   //则交换后继续往下走
+                i=j;
+                j=2*i;
+            }
+            else
+                break;
+        }
+        R[i]=temp;
+    }
+    /*堆排序函数*/
+    public static void heapSort(int[] R, int n){
+        int i;
+        int temp;
+        for(i=n/2;i>0;--i)    //建立初始堆
+            Shift(R,i,n);
+        for(i=n;i>1;--i){     //进行n-1次循环完成堆排序
+            temp=R[1];
+            R[1]=R[i];
+            R[i]=temp;
+            Shift(R,1,i-1);
+        }
+    }
+归并排序
+public static void sort(int[] arr, int L, int R) {
+    if(L == R) {
+        return;
+    }
+    int mid = L + ((R - L) >> 1);
+    sort(arr, L, mid);
+    sort(arr, mid + 1, R);
+    merge(arr, L, mid, R);
+}
+
+public static void merge(int[] arr, int L, int mid, int R) {
+    int[] temp = new int[R - L + 1];
+    int i = 0;
+    int p1 = L;
+    int p2 = mid + 1;
+    // 比较左右两部分的元素，哪个小，把那个元素填入temp中
+    while(p1 <= mid && p2 <= R) {
+        temp[i++] = arr[p1] < arr[p2] ? arr[p1++] : arr[p2++];
+    }
+    // 上面的循环退出后，把剩余的元素依次填入到temp中
+    // 以下两个while只有一个会执行
+    while(p1 <= mid) {
+        temp[i++] = arr[p1++];
+    }
+    while(p2 <= R) {
+        temp[i++] = arr[p2++];
+    }
+    // 把最终的排序的结果复制给原数组
+    for(i = 0; i < temp.length; i++) {
+        arr[L + i] = temp[i];
+    }
+}
+
+基数排序
+    int exp = 1; // 1, 10, 100, 1000 ...
+    int R = 10; // 10 digits
+
+    int[] aux = new int[nums.length];
+    
+    while (m / exp > 0) { // Go through all digits from LSB to MSB
+        int[] count = new int[R];
+        
+        for (int i = 0; i < nums.length; i++) {
+            count[(nums[i] / exp) % 10]++;
+        }
+        
+        for (int i = 1; i < count.length; i++) {
+            count[i] += count[i - 1];
+        }
+        
+        for (int i = nums.length - 1; i >= 0; i--) {
+            aux[--count[(nums[i] / exp) % 10]] = nums[i];
+        }
+        
+        for (int i = 0; i < nums.length; i++) {
+            nums[i] = aux[i];
+        }
+        exp *= 10;
+    }

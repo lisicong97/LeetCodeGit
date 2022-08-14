@@ -8,6 +8,10 @@
 
 dfs/bfs BFS可以考虑PriorityQueue
 
+一个一个凑可以用binary search
+
+inorder postorder preorder
+
 发现没什么可以套，找找规律，看看有什么数学方法
 
 preSum用hashMap存时，key为preSum，value为出现次数，注意map初始化后，map[0] = 1
@@ -449,18 +453,12 @@ dfs，找到满足root的value大于small小于big，root比small还小了找roo
 
 有没有子树是完全一样的结构，考虑序列化之后比较。用postorder，这样子树的key都已经知道，再与本node比较。
 
-**236 Lowest Common Ancestor of a Binary Tree**
+# meeting room interval
 
-```java
-public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-    if (root == null || root == p || root == q) return root;
-    TreeNode left = lowestCommonAncestor(root.left, p, q);
-    TreeNode right = lowestCommonAncestor(root.right, p, q);
-    if(left == null && right == null) return null; 
-    if(left != null && right != null) return root;  
-    return left == null ? right : left;
-}
-```
+56, https://www.cnblogs.com/grandyang/p/5244720.html
+
+interval maximium
+每个range按结束时间sort，遍历，看能不能加进res
 
 # 图形求面积
 
@@ -631,8 +629,8 @@ dp
 
 ```Java
     public boolean checkValidString(String s) {
-        int low = 0; // 左括号最小个数
-        int high = 0; // 左括号最大个数
+        int low = 0; // 未配对左括号最小个数
+        int high = 0; // 未配对左括号最大个数
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '(') {
                 low++;
@@ -864,26 +862,34 @@ z = x y 的最大公约数
 
 图union find 684
 
+一个乱序list可以分成k个cyclic list (用union find找小list，根据union次数能知道count(cyclic list))，让 子list re-order需要的swap次数是len(cyclic list)-1，让整个list re-order需要的swap次数是len(list) - count(cyclic list)
+
 ```
-        def find(x):
-            if parent[x] == -1:
-                return x
-            parent[x] = find(parent[x])
-            return parent[x]
-            
-        def union(x, y):
-            root_x = find(x)
-            root_y = find(y)
-            if root_x == root_y:
-                return False #已经连在一起了
-            elif rank[root_x] < rank[root_y]:
-                parent[root_x] = root_y
-                rank[root_y] += 1
-                return True
-            else:
-                parent[root_y] = root_x
-                rank[root_x] += 1
-                return True
+    private class UF {
+        private int[] parents;
+        UF(int n) {
+            parents = new int[n];
+            for (int i = 0; i < n; i++) {
+                parents[i] = i;
+            }
+        }
+        
+        private int find(int i) {
+            if (parents[i] == i) {
+                return i;
+            }
+            parents[i] = find(parents[i]);
+            return parents[i];
+        }
+        
+        public void union(int i, int j) {
+            int a = find(i);
+            int b = find(j);
+            if (a != b) {
+                parents[a] = b;
+            }
+        }
+    }
 ```
 
 Minimum spanning tree
