@@ -24,7 +24,7 @@ Android能运行在自己的手机上，牛逼 -> 学了几个月，发现level 
 
 a graduate student in UC San Diego. My major is Computer Science. graduate in Dec.
 
-intern in Google Photos: implement a Machine learning model in Android app - scan the picture - generate a suggested action chip, lead users to use corresponding editing tools.
+intern in Google Photos: implement a Machine learning model in Android app - scan the picture, compute which editing you may want - generate a suggested action chip, lead users to use corresponding editing tools.
 
 working in bytedance: IM app. 10 iteration of it. post picture, interaction with other's post. find nearby friends. memory leakage problem.
 
