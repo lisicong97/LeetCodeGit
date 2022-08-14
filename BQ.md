@@ -22,23 +22,25 @@ Android能运行在自己的手机上，牛逼 -> 学了几个月，发现level 
 
 ## Introduce myself
 
-I am SICONG LI, you can call me Li, I am a graduate student in UC San Diego. My major is Computer Science.
+a graduate student in UC San Diego. My major is Computer Science. graduate in Dec.
 
-When I was an undergraduate, I built a website about Chinese medicine, it could show knowledge graph about disease symptom medicine, and their relationship. Currently, the website is combined by China Knowledge Centre for Engineering Sciences and Technology.			Thus I am familiar with Java Spring, MyBatis and Neo4J.
+intern in Google Photos: implement a Machine learning model in Android app - scan the picture - generate a suggested action chip, lead users to use corresponding editing tools.
 
-I have one year full-time job in Bytedance as an Android Developer. At that time, I participated in building a instant message application like Whatsapp, which is released in Africa. I have been involved in more than ten version iteration and finished features like multimedia upload, watch and comment, find nearby friends and I also fix some problem like memory leak problem (ANR, smooth).			Thus I am familiar with Java, Kotlin, SQL and gradle. 
+working in bytedance: IM app. 10 iteration of it. post picture, interaction with other's post. find nearby friends. memory leakage problem.
 
-Besides, I also developed engineering awareness. Like I would write detailed document before coding to make my code readable and expandable. I tend to communicate with project manager, UI designer and other programmer thoroughly in a meeting.
+When I was an undergraduate, I built a website about Chinese medicine, it could show knowledge graph about disease symptom medicine, and their relationship. 
 
-I really like being in a group of people, and we have one single target, we use our different skills to make things happen. And I think XXX is such a company that I can work with a group of smart people. YOUR JOB IS SUITABLE FOR ME. Therefore I truly cherish the opportunity to join XXX.
+Thus I am familiar with Java, Android, Kotlin, MyBatis and SQL.
 
-## Why Amazon
+engineering awareness. Like I would write detailed document before coding to make my code readable and expandable. 
+communicate with other. group of ppl different skills, share 1 goal, fight for.
+
+## Why This company
 
 喜欢公司的产品、培训制度、or any other policy.
 
-my Technology Stack meets the requirements / I wanna learn something about back-end. 
+my Technology Stack meets the requirements / I am into back-end. design complex system / feeling of having an impact
 
-I like work with smart people and march to the same goal.
 
 
 
