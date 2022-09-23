@@ -26,6 +26,23 @@ T(n) = a*T(n/b)+ n^k
 
 Dfs bfs time complexity: map: O(N+E) matrix:O(N^2)
 
+### reverse list
+
+```java
+ListNode reverse(ListNode head) {
+        ListNode left = null, right;
+        while (head != null) {
+            right = head.next;
+            head.next = left;
+            left = head;
+            head = right;
+        }
+        return left;
+    }
+```
+
+
+
 # sort
 
 ```Java

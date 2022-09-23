@@ -18,7 +18,9 @@
 处理矛盾的能力 （星星
 处理失败的能力 （用Lint
 
-Android能运行在自己的手机上，牛逼 -> 学了几个月，发现level can't break through，方案也是服务端同学写的 -> 我也可以back-end，都有sql，多线程，真正重要的是scheme的设计，考虑可扩展性，可读性。
+Android visible touchable -> 发现level can't break through，方案也是服务端同学写的 -> 我也可以back-end，都有sql，多线程，真正重要的是scheme的设计，考虑可扩展性，可读性。
+
+自我介绍简短精彩; 不会做的话举几个例子(N = 1, N = 2); 写好函数调用框架; 套用dp,Hashmap...
 
 ## Introduce myself
 
